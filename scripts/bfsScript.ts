@@ -305,6 +305,7 @@ async function userBFS(event: MouseEvent, currentColor: Record<string, string>):
         for (const vertex of level) {
             const coordinates = indexToCoordinates(vertex);
             fillBox(canvas, coordinates.x*NODE_SIZE, coordinates.y*NODE_SIZE, NODE_SIZE, NODE_SIZE, `#${currentColor['r']}${currentColor['g']}${currentColor['b']}`);
+            sketchBox(canvas, coordinates.x*NODE_SIZE, coordinates.y*NODE_SIZE, NODE_SIZE, NODE_SIZE, 1, 'black');
         }
         const green = currentColor['g'];
         if (green === undefined || green === null) {throw new Error;}
