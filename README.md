@@ -15,3 +15,8 @@ Algorithms that will be added in the future include the following:
 - TypeScript
 - HTML
 - Canvas API
+- Browserify
+- Tsify
+
+To run browserify on the original TypeScript files, use the following command:
+```npx browserify SCRIPT_NAME.ts -p tsify > bundle.js```
