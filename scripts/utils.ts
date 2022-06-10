@@ -1,15 +1,61 @@
 // Global constants and useful functions.
 
-export const NODE_SIZE = 10;
-export const CANVAS_SIZE = 100; // needs to be changed in the index.html file as well
+export const NODE_SIZE = 30;
+export const CANVAS_SIZE = 900; // needs to be changed in the index.html file as well
 export const NUMBER_NODES_PER_SIDE = CANVAS_SIZE / NODE_SIZE;
+
+/**
+ * Draws a rectangle with dimensions `width` x `height` and upper left corner coordinate (x, y).
+ * 
+ * @param canvas 
+ * @param x upper left corner's x-coordinate
+ * @param y upper left corner's y-coordinate
+ * @param width 
+ * @param height 
+ * @param thickness border thickness
+ * @param color border color
+ */
+export function sketchBox(canvas: HTMLCanvasElement, x: number, y: number, width: number, height: number, thickness: number, color: string): void {
+    const context = canvas.getContext("2d");
+    if (context === undefined || context === null) {
+        throw new Error;
+    }
+    context.save();
+    context.translate(x, y);
+    context.strokeStyle = color;
+    context.lineWidth = thickness;
+    context.strokeRect(0, 0, width, height);
+    context.restore();
+}
+
+/**
+ * Fills in a rectangle with dimensions `width` x `height` and upper left corner coordinate (x, y).
+ * 
+ * @param canvas 
+ * @param x upper left corner's x-coordinate
+ * @param y upper left corner's y-coordinate
+ * @param width 
+ * @param height 
+ * @param color 
+ */
+export function fillBox(canvas: HTMLCanvasElement, x: number, y: number, width: number, height: number, color: string): void {
+    const context = canvas.getContext("2d");
+    if (context === undefined || context === null) {
+        throw new Error;
+    }
+    context.save();
+    context.translate(x, y);
+    context.fillStyle = color;
+    context.fillRect(0, 0, width, height);
+    context.restore();
+}
 
 export function indexToCoordinates(index: number): {x: number, y: number} {
     return {x: index % NODE_SIZE, y: Math.floor(index/NODE_SIZE)};
 }
 
 export function pixelToCoordinates(horizontal: number, vertical: number): {x: number, y: number} {
-    return {x: horizontal % NODE_SIZE, y: Math.floor(vertical/NODE_SIZE)};
+    return {x: Math.floor(horizontal / NODE_SIZE), y: Math.floor(vertical/NODE_SIZE)};
 }
 
 export function coordinatesToIndex(x: number, y: number) {
@@ -131,4 +177,14 @@ export function generateSquareNeighbors(size: number): Map<number, Array<number>
         neighbors.set(i, currentNeighbors);
     }
     return neighbors;
+}
+
+/**
+ * Returns a promise that will resolve after `ms` milliseconds.
+ * 
+ * @param ms number of milliseconds that the pause should last for
+ * @returns promise that resolves after `ms` milliseconds
+ */
+export async function pause(ms: number): Promise<void> {
+    return new Promise((resolve, reject) => {setTimeout(() => resolve(), ms);});
 }
