@@ -1,218 +1,8 @@
-const NODE_SIZE = 30;
-const CANVAS_SIZE = 900; // needs to be changed in the index.html file as well
-const NUMBER_NODES_PER_SIDE = CANVAS_SIZE / NODE_SIZE;
+import { NODE_SIZE, CANVAS_SIZE, NUMBER_NODES_PER_SIDE, sketchBox, fillBox, pixelToCoordinates, coordinatesToIndex, generateSquareNeighbors, indexToCoordinates, pause} from './utils';
 
 const canvas: HTMLCanvasElement = document.getElementById("canvas") as HTMLCanvasElement ?? null;
 if (canvas === undefined || canvas === null) {
     throw new Error;
-}
-
-/**
- * Draws a rectangle with dimensions `width` x `height` and upper left corner coordinate (x, y).
- * 
- * @param canvas 
- * @param x upper left corner's x-coordinate
- * @param y upper left corner's y-coordinate
- * @param width 
- * @param height 
- * @param thickness border thickness
- * @param color border color
- */
-function sketchBox(canvas: HTMLCanvasElement, x: number, y: number, width: number, height: number, thickness: number, color: string): void {
-    const context = canvas.getContext("2d");
-    if (context === undefined || context === null) {
-        throw new Error;
-    }
-    context.save();
-    context.translate(x, y);
-    context.strokeStyle = color;
-    context.lineWidth = thickness;
-    context.strokeRect(0, 0, width, height);
-    context.restore();
-}
-
-/**
- * Fills in a rectangle with dimensions `width` x `height` and upper left corner coordinate (x, y).
- * 
- * @param canvas 
- * @param x upper left corner's x-coordinate
- * @param y upper left corner's y-coordinate
- * @param width 
- * @param height 
- * @param color 
- */
-function fillBox(canvas: HTMLCanvasElement, x: number, y: number, width: number, height: number, color: string): void {
-    const context = canvas.getContext("2d");
-    if (context === undefined || context === null) {
-        throw new Error;
-    }
-    context.save();
-    context.translate(x, y);
-    context.fillStyle = color;
-    context.fillRect(0, 0, width, height);
-    context.restore();
-}
-
-/**
- * Converts flattened 2D matrix index to grid coordinates.
- * 
- * @param index flattened index location
- * @returns coordinates where the origin is the upper left corner of the grid
- */
-function indexToCoordinates(index: number): {x: number, y: number} {
-    return {x: index % NODE_SIZE, y: Math.floor(index/NODE_SIZE)};
-}
-
-/**
- * Converts pixel location to grid coordinates.
- * 
- * @param horizontal pixel's x-coordinate
- * @param vertical pixel's y-coordinate
- * @returns coordinates where the origin is the upper left corner of the grid
- */
-function pixelToCoordinates(horizontal: number, vertical: number): {x: number, y: number} {
-    return {x: Math.floor(horizontal / NODE_SIZE), y: Math.floor(vertical/NODE_SIZE)};
-}
-
-/**
- * Converts grid coordinates to flattened index.
- * 
- * @param x 
- * @param y 
- * @returns flattened index
- */
-function coordinatesToIndex(x: number, y: number) {
-    return x * NODE_SIZE + y;
-}
-
-/**
- * Checks if the given index represents a corner grid block.
- * 
- * @param index flattened index
- * @param size side length of square grid
- * @returns true if the index represents a corner grid block.
- */
-function isCornerIndex(index: number, size: number): boolean {
-    return index === 0 || index === size - 1 || index === size*size - 1 || index === size * (size - 1);
-}
-
-/**
- * Checks if the given index represents a side grid block.
- * 
- * @param index flattened index
- * @param size side length of square grid
- * @returns true if the index represents a side grid block.
- */
-function isSideIndex(index: number, size: number): boolean {
-    return Math.floor(index / size) === 0 || index % size === 0 || Math.floor(index / size) === size - 1 || index % size === size - 1;
-}
-
-/**
- * Given a square grid of side length `size`, computes neighbors of all blocks in the grid.
- * 
- * @param size side length of square grid
- * @returns adjacency list
- */
-function generateSquareNeighbors(size: number): Map<number, Array<number>> {
-    const neighbors = new Map<number, Array<number>>();
-    const total = size * size;
-    for (let i = 0; i < total; i++) {
-        const currentNeighbors: Array<number> = [];
-
-        // elements on the side of the square will not have all 4 possible neighbors.
-        // possibilities: corner (2 neighbors), just the side (3 neighbors)
-        // corners
-
-        if (isCornerIndex(i, size)) {
-            switch (i) {
-            case 0: {
-                const rightIndex = i + 1;
-                const bottomIndex = i + size;
-                if (rightIndex < total) currentNeighbors.push(rightIndex);
-                if (bottomIndex < total) currentNeighbors.push(bottomIndex);
-                break;
-            }
-            case size - 1: {
-                const leftIndex = i - 1;
-                const bottomIndex = i + size;
-                if (leftIndex < total) currentNeighbors.push(leftIndex);
-                if (bottomIndex < total) currentNeighbors.push(bottomIndex);
-                break;
-            }
-            case (size * size) - 1: {
-                const leftIndex = i - 1;
-                const topIndex = i - size;
-                if (leftIndex < total) currentNeighbors.push(leftIndex);
-                if (topIndex < total) currentNeighbors.push(topIndex);
-                break;
-            }
-            case size * (size - 1): {
-                const rightIndex = i + 1;
-                const topIndex = i - size;
-                if (rightIndex < total) currentNeighbors.push(rightIndex);
-                if (topIndex < total) currentNeighbors.push(topIndex);
-                break;
-            }
-            default:
-                throw new Error("Mistakenly classified as corner index");
-            }
-        }
-
-        // sides
-        else if (isSideIndex(i, size)) {
-            // TODO
-            if (Math.floor(i / size) === 0) { // top row
-                const rightIndex = i + 1;
-                const leftIndex = i - 1;
-                const bottomIndex = i + size;
-                if (rightIndex < total) currentNeighbors.push(rightIndex);
-                if (leftIndex < total) currentNeighbors.push(leftIndex);
-                if (bottomIndex < total) currentNeighbors.push(bottomIndex);
-            }
-
-            else if (i % size === 0) { // left col
-                const rightIndex = i + 1;
-                const topIndex = i - size;
-                const bottomIndex = i + size;
-                if (rightIndex < total) currentNeighbors.push(rightIndex);
-                if (topIndex < total) currentNeighbors.push(topIndex);
-                if (bottomIndex < total) currentNeighbors.push(bottomIndex);
-            }
-
-            else if (Math.floor(i / size) === size - 1) { // bottom row
-                const rightIndex = i + 1;
-                const topIndex = i - size;
-                const leftIndex = i - 1;
-                if (rightIndex < total) currentNeighbors.push(rightIndex);
-                if (topIndex < total) currentNeighbors.push(topIndex);
-                if (leftIndex < total) currentNeighbors.push(leftIndex);
-            }
-
-            else if (i % size === size - 1) { // right col
-                const leftIndex = i - 1;
-                const topIndex = i - size;
-                const bottomIndex = i + size;
-                if (leftIndex < total) currentNeighbors.push(leftIndex);
-                if (topIndex < total) currentNeighbors.push(topIndex);
-                if (bottomIndex < total) currentNeighbors.push(bottomIndex);
-            }
-
-            else {
-                throw new Error("Mistakenly classified as side (not corner) index");
-            }
-        }
-
-        else {
-            const leftIndex = i - 1;
-            const rightIndex = i + 1;
-            const topIndex = i - size;
-            const bottomIndex = i + size;
-            const indices = [leftIndex, rightIndex, topIndex, bottomIndex];
-            currentNeighbors.push(...indices);
-        }
-        neighbors.set(i, currentNeighbors);
-    }
-    return neighbors;
 }
 
 /**
@@ -279,17 +69,7 @@ function BFS(start: number, adjacencies: Map<number, Array<number>>): Map<number
 }
 
 /**
- * Returns a promise that will resolve after `ms` milliseconds.
- * 
- * @param ms number of milliseconds that the pause should last for
- * @returns promise that resolves after `ms` milliseconds
- */
-async function pause(ms: number): Promise<void> {
-    return new Promise((resolve, reject) => {setTimeout(() => resolve(), ms);});
-}
-
-/**
- * Runs BFS and colors in the graph based on the user's choice of starting vertex.
+ * Runs DFS and colors in the graph based on the user's choice of starting vertex.
  * 
  * @param event mouse click
  */
@@ -331,7 +111,7 @@ async function userBFS(event: MouseEvent, currentColor: Record<string, string>):
     }
 }
 
-function main() {
+function bfsMain() {
     // Draw the grid
     for (let i = 0; i < CANVAS_SIZE; i = i + NODE_SIZE) {
         for (let j = 0; j < CANVAS_SIZE; j = j + NODE_SIZE) {
@@ -346,4 +126,4 @@ function main() {
     }));
 }
 
-main();
+bfsMain();
