@@ -9,7 +9,7 @@
         "noUncheckedIndexedAccess": true,
         
         "target": "ES2021",
-        // "module": "CommonJS",
+        "module": "CommonJS",
         "esModuleInterop": true,
         "sourceMap": true,
         "outDir": "dist",
