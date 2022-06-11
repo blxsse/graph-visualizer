@@ -4,6 +4,7 @@ export const NODE_SIZE = 30;
 export const CANVAS_SIZE = 900; // needs to be changed in the index.html file as well
 export const NUMBER_NODES_PER_SIDE = CANVAS_SIZE / NODE_SIZE;
 
+export enum SPEED {SLOW, REGULAR, FAST}
 /**
  * Draws a rectangle with dimensions `width` x `height` and upper left corner coordinate (x, y).
  * 
@@ -123,7 +124,6 @@ export function generateSquareNeighbors(size: number): Map<number, Array<number>
 
         // do sides
         else if (isSideIndex(i, size)) {
-            // TODO
             if (Math.floor(i / size) === 0) { // top row
                 const rightIndex = i + 1;
                 const leftIndex = i - 1;
@@ -187,4 +187,30 @@ export function generateSquareNeighbors(size: number): Map<number, Array<number>
  */
 export async function pause(ms: number): Promise<void> {
     return new Promise((resolve, reject) => {setTimeout(() => resolve(), ms);});
+}
+
+export function changeSpeed(newSpeed: string): SPEED {
+    switch (newSpeed) {
+    case 'slow':
+        return SPEED.SLOW;
+    case 'regular':
+        return SPEED.REGULAR;
+    case 'fast':
+        return SPEED.FAST;
+    default:
+        throw new Error;
+    }
+}
+
+export function levelsVisibility(visibility: string): boolean {
+    return visibility === 'Yes';
+}
+
+export function clearCanvas(canvas: HTMLCanvasElement): void {
+    for (let i = 0; i < CANVAS_SIZE; i = i + NODE_SIZE) {
+        for (let j = 0; j < CANVAS_SIZE; j = j + NODE_SIZE) {
+            fillBox(canvas, i, j, NODE_SIZE, NODE_SIZE, 'white');
+            sketchBox(canvas, i, j, NODE_SIZE, NODE_SIZE, 1, 'black');
+        }
+    }
 }
