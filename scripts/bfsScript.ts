@@ -1,5 +1,4 @@
 import { NODE_SIZE, CANVAS_SIZE, NUMBER_NODES_PER_SIDE, sketchBox, fillBox, pixelToCoordinates, coordinatesToIndex, generateSquareNeighbors, indexToCoordinates, pause, SPEED, changeSpeed, levelsVisibility, clearCanvas} from './utils';
-let NUM_SEARCHES = 0;
 
 /**
  * Performs breadth-first search (BFS) on a graph beginning at the vertex `start`
@@ -69,8 +68,7 @@ function BFS(start: number, adjacencies: Map<number, Array<number>>): Map<number
  * 
  * @param event mouse click
  */
-async function userBFS(canvas: HTMLCanvasElement, event: MouseEvent, currentColor: Record<string, string>, animationSpeed: SPEED, areLevelsVisible: boolean): Promise<void> {
-    NUM_SEARCHES += 1;
+async function userBFS(canvas: HTMLCanvasElement, event: MouseEvent, currentColor: Record<string, string>, animationSpeed: SPEED, levelsAreVisible: boolean): Promise<void> {
     const resetButton = document.getElementById("reset-button") as HTMLButtonElement ?? null;
     if (resetButton === undefined || resetButton === null) {throw new Error;}
     resetButton.disabled = true;
@@ -118,37 +116,17 @@ async function userBFS(canvas: HTMLCanvasElement, event: MouseEvent, currentColo
             ms = 50;
             break;
         }
-        if (areLevelsVisible) {
+        if (levelsAreVisible) {
             // TODO add levels output to some output screen
         }
         await pause(ms);
 
     }
-    NUM_SEARCHES -= 1;
-    if (NUM_SEARCHES === 0) {
-        resetButton.disabled = false;
-    }
+    resetButton.disabled = false;
+    activate(canvas);
 }
 
-function changeOutputVisibility(flag: boolean): void {
-    const outputBox = document.getElementById("output-box") as HTMLElement ?? null;
-    if (outputBox === undefined || outputBox === null) {throw new Error;}
-    outputBox.style.visibility = flag ? "visible" : "hidden";
-}
-
-function bfsMain() {
-    const canvas: HTMLCanvasElement = document.getElementById("canvas") as HTMLCanvasElement ?? null;
-    if (canvas === undefined || canvas === null) {
-        throw new Error;
-    }
-
-    // Draw the grid
-    for (let i = 0; i < CANVAS_SIZE; i = i + NODE_SIZE) {
-        for (let j = 0; j < CANVAS_SIZE; j = j + NODE_SIZE) {
-            sketchBox(canvas, i, j, NODE_SIZE, NODE_SIZE, 1, 'black');
-        }
-    }
-
+function activate(canvas: HTMLCanvasElement): void {
     const currentColor = {'r': '00', 'g': 'c1', 'b': 'ff'}; // modify later to multiple starter gradients
 
     let animationSpeed = SPEED.REGULAR;
@@ -174,9 +152,29 @@ function bfsMain() {
 
     canvas.addEventListener('click', (async (event: MouseEvent) => {
         userBFS(canvas, event, currentColor, animationSpeed, levelsAreVisible);
-    }));
+    }), {'once': true});
+}
 
-    
+function changeOutputVisibility(flag: boolean): void {
+    const outputBox = document.getElementById("output-box") as HTMLElement ?? null;
+    if (outputBox === undefined || outputBox === null) {throw new Error;}
+    outputBox.style.visibility = flag ? "visible" : "hidden";
+}
+
+function bfsMain() {
+    const canvas: HTMLCanvasElement = document.getElementById("canvas") as HTMLCanvasElement ?? null;
+    if (canvas === undefined || canvas === null) {
+        throw new Error;
+    }
+
+    // Draw the grid
+    for (let i = 0; i < CANVAS_SIZE; i = i + NODE_SIZE) {
+        for (let j = 0; j < CANVAS_SIZE; j = j + NODE_SIZE) {
+            sketchBox(canvas, i, j, NODE_SIZE, NODE_SIZE, 1, 'black');
+        }
+    }
+
+    activate(canvas);  
 }
 
 bfsMain();
