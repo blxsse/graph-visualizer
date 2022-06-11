@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>
+            BFS Visualization
+        </title>
+        <link rel="icon" type="image/svg" href="../images/bounding-box-circles.svg"/>
+        <link rel="stylesheet" href="../styles/bfs.css"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    </head>
+
+    <body>
+
+        <div id="container">
+            <canvas id="canvas" width="900px" height="900px"></canvas>
+
+            <div id="options">
+                <div id="speed">
+                    <fieldset>
+                        <legend> Animation speed: </legend>
+                        <input type="radio" id="slow"
+                        name="speed" value="slow">
+                        <label for="slow">Slow</label>
+                   
+                        <input type="radio" id="regular"
+                        name="speed" value="regular" checked>
+                        <label for="regular">Regular</label>
+                   
+                        <input type="radio" id="fast"
+                        name="speed" value="fast">
+                        <label for="fast">Fast</label>
+                    </fieldset>
+                    
+                  </div>
+        
+                  <div id="show-levels">
+                    <fieldset>
+                        <legend> Show the level sets: </legend>
+                        <input type="radio" id="yes"
+                        name="levels" value="Yes">
+                        <label for="yes">Yes</label>
+                   
+                        <input type="radio" id="No"
+                        name="levels" value="No" checked>
+                        <label for="No">No</label>
+                    </fieldset>
+                    
+                  </div>
+
+                  <div id="reset">
+                    <button id="reset-button" autocomplete="off">Reset</button>
+                  </div>
+
+                  <div id="output-box">
+                    <p>jlsjdflskjdfs dls djflsdj flsjdf lsjdf lskdjflskdjf lsdj fslkdj flskdjf lskdjf slkdjlsfj dsldfj lsdj flskdjf lskdjf lsdjfslkdjfslkdjfsl kdjf l</p>
+                  </div>
+
+                  
+            </div>
+            
+        </div>
+        
+
+        
+        <script src="../bundle.js"></script>
+    </body>
+</html>
