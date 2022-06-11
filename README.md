@@ -13,7 +13,7 @@ Algorithms that will be added in the future include the following:
 
 ## Tools used:
 - TypeScript
-- HTML
+- HTML/CSS
 - Canvas API
 - Browserify
 - Tsify
