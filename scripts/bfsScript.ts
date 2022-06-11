@@ -1,9 +1,5 @@
-import { NODE_SIZE, CANVAS_SIZE, NUMBER_NODES_PER_SIDE, sketchBox, fillBox, pixelToCoordinates, coordinatesToIndex, generateSquareNeighbors, indexToCoordinates, pause} from './utils';
-
-const canvas: HTMLCanvasElement = document.getElementById("canvas") as HTMLCanvasElement ?? null;
-if (canvas === undefined || canvas === null) {
-    throw new Error;
-}
+import { NODE_SIZE, CANVAS_SIZE, NUMBER_NODES_PER_SIDE, sketchBox, fillBox, pixelToCoordinates, coordinatesToIndex, generateSquareNeighbors, indexToCoordinates, pause, SPEED, changeSpeed, levelsVisibility, clearCanvas} from './utils';
+let NUM_SEARCHES = 0;
 
 /**
  * Performs breadth-first search (BFS) on a graph beginning at the vertex `start`
@@ -73,7 +69,11 @@ function BFS(start: number, adjacencies: Map<number, Array<number>>): Map<number
  * 
  * @param event mouse click
  */
-async function userBFS(event: MouseEvent, currentColor: Record<string, string>): Promise<void> {
+async function userBFS(canvas: HTMLCanvasElement, event: MouseEvent, currentColor: Record<string, string>, animationSpeed: SPEED, areLevelsVisible: boolean): Promise<void> {
+    NUM_SEARCHES += 1;
+    const resetButton = document.getElementById("reset-button") as HTMLButtonElement ?? null;
+    if (resetButton === undefined || resetButton === null) {throw new Error;}
+    resetButton.disabled = true;
     const coordinates = pixelToCoordinates(event.offsetY, event.offsetX);
     const index = coordinatesToIndex(coordinates.x, coordinates.y);
     const adjacencies = generateSquareNeighbors(NUMBER_NODES_PER_SIDE);
@@ -106,12 +106,42 @@ async function userBFS(event: MouseEvent, currentColor: Record<string, string>):
             stringifiedValue = "FF";
         }
         currentColor['r'] = stringifiedValue.length === 2? stringifiedValue : "0" + stringifiedValue;
-        await pause(100);
+        let ms: number;
+        switch (animationSpeed) {
+        case SPEED.SLOW:
+            ms = 200;
+            break;
+        case SPEED.REGULAR:
+            ms = 100;
+            break;
+        case SPEED.FAST:
+            ms = 50;
+            break;
+        }
+        if (areLevelsVisible) {
+            // TODO add levels output to some output screen
+        }
+        await pause(ms);
 
+    }
+    NUM_SEARCHES -= 1;
+    if (NUM_SEARCHES === 0) {
+        resetButton.disabled = false;
     }
 }
 
+function changeOutputVisibility(flag: boolean): void {
+    const outputBox = document.getElementById("output-box") as HTMLElement ?? null;
+    if (outputBox === undefined || outputBox === null) {throw new Error;}
+    outputBox.style.visibility = flag ? "visible" : "hidden";
+}
+
 function bfsMain() {
+    const canvas: HTMLCanvasElement = document.getElementById("canvas") as HTMLCanvasElement ?? null;
+    if (canvas === undefined || canvas === null) {
+        throw new Error;
+    }
+
     // Draw the grid
     for (let i = 0; i < CANVAS_SIZE; i = i + NODE_SIZE) {
         for (let j = 0; j < CANVAS_SIZE; j = j + NODE_SIZE) {
@@ -121,9 +151,32 @@ function bfsMain() {
 
     const currentColor = {'r': '00', 'g': 'c1', 'b': 'ff'}; // modify later to multiple starter gradients
 
+    let animationSpeed = SPEED.REGULAR;
+    let levelsAreVisible = false;
+
+    const speedButtons = document.getElementsByName("speed");
+    for (const element of speedButtons) {
+        const button = element as HTMLInputElement ?? null;
+        if (button === undefined || button === null) {throw new Error;}
+        button.onclick = () => animationSpeed = changeSpeed(button.value);
+    }
+
+    const visibilityButtons = document.getElementsByName("levels");
+    for (const element of visibilityButtons) {
+        const button = element as HTMLInputElement ?? null;
+        if (button === undefined || button === null) {throw new Error;}
+        button.onclick = () => {levelsAreVisible = levelsVisibility(button.value); changeOutputVisibility(levelsAreVisible);};
+    }
+
+    const resetButton = document.getElementById("reset-button") as HTMLButtonElement ?? null;
+    if (resetButton === undefined || resetButton === null) {throw new Error;}
+    resetButton.onclick = () => clearCanvas(canvas);
+
     canvas.addEventListener('click', (async (event: MouseEvent) => {
-        userBFS(event, currentColor);
+        userBFS(canvas, event, currentColor, animationSpeed, levelsAreVisible);
     }));
+
+    
 }
 
 bfsMain();
