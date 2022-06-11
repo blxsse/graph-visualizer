@@ -1,0 +1,78 @@
+#container {
+    width: 90vw;
+    height: 90vh;
+    padding: 10px;
+}
+
+
+#canvas {
+    border: 1px solid black;
+    padding-left: 0;
+    padding-right: 0;
+    margin-left: auto;
+    margin-right: auto;
+    display: inline-block;
+    width: 900px;
+    height: 900px;
+    vertical-align: middle;
+}
+
+#options {
+    font-family: Georgia, 'Times New Roman', Times, serif;
+    padding-left: 1%;
+    padding-right: 0;
+    display: inline-block;
+    width: 20%;
+    height: 30%;
+    vertical-align: top;
+    padding-bottom: 10%;
+}
+#speed {
+    /*padding-left: 10%;
+    padding-right: 0;
+    display: inline-block;
+    vertical-align: top;*/
+    padding-bottom: 10%;
+}
+
+#show-levels {
+    /*padding-left: 10%;
+    padding-right: 0;
+    display: inline-block;
+    vertical-align: top;*/
+    padding-bottom: 10%;
+}
+
+#output-box {
+    box-sizing: border-box;
+    display: inline-block;
+    border: 4px solid steelblue;
+    padding: 8px;
+    visibility: hidden;
+    
+}
+
+#reset {
+    padding-bottom: 10%;
+    margin-left:40%;
+}
+
+#reset-button:hover {
+    cursor: pointer;
+}
+
+#reset-button:disabled {
+    cursor: not-allowed;
+}
+
+legend {
+    background-color: steelblue;
+    padding: 3px 25px;
+    width: 70%;
+    color: white;
+    text-align:center;
+}
+
+fieldset {
+    border: 2px steelblue solid;
+}
